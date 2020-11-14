@@ -1,40 +1,45 @@
-import React from 'react'
+import React, {useState} from 'react'
+import {Heading, SearchBox, SearchBar} from './styles'
 
 
-const APIKEY = ''
+const apiKey = ''
+const uri = 'api.openweathermap.org/data/2.5/'
 
-class WeatherFetcher extends React.Component{
-    constructor(props){
-        super(); 
-        this.state = {
-            weather:'',
-            error: false
-        }
-    }
+function WeatherFetcher(){
+    const [weather, setWeather] = useState({})
+    const [city, setCity] = useState('')
 
-    componentDidMount(){
-        this.setState({
-            weather: this.getWeather()
-        )}
-    } 
-    
-    getWeather = () => {
-        uri = `api.openweathermap.org/data/2.5/weather?q=honolulu&appid=${APIKEY}`
-        return fetch (uri)
-        .then(res => {
-            return res.json()
+    const search = (e) => {
+        fetch(`${uri}weather?q=${city}&units=imperial&appid=${apiKey}`, {
+            headers : { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
         })
+        .then(res => 
+            res.json())
+        .then(result => { 
+            console.log(result)
+            setWeather(result)}
+            )
     }
 
-    render(){
-        console.log(this.state)
-        return(
-            <div>
-
+    return(
+    <div>
+            <SearchBox>
+             <SearchBar 
+                type="text"
+                placeholder="search"
+                onChange={e => setCity(e.target.value)}
+                value={city}
+                onKeyPress={search}
+                />
+            </SearchBox>
+            <Heading>
+               {city}
+            </Heading>
             </div>
-        )
-    }
-
+    )
 }
 
 export default WeatherFetcher
